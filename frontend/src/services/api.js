@@ -14,3 +14,9 @@ export async function createTask(task) {
     body: JSON.stringify(task),
   });
 }
+
+export async function deleteTask(taskId) {
+  await fetch(`${API_URL}/tasks/${taskId}`, {
+    method: "DELETE",
+  });
+}
