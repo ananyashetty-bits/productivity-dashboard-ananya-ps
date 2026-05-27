@@ -1,4 +1,12 @@
+import { useEffect, useState } from "react";
+
 function Analytics({ tasks }) {
+
+  const [refreshWeekly, setRefreshWeekly] =
+  useState(false);
+
+  const [productivityHistory, setProductivityHistory] =
+  useState({});
 
   // ---------------- FILTER TASKS ----------------
 
@@ -57,6 +65,62 @@ function Analytics({ tasks }) {
         )
       : 0;
 
+  // ---------------- SAVE PRODUCTIVITY HISTORY ----------------
+
+ useEffect(() => {
+
+  const today =
+    new Date().toLocaleDateString();
+
+  const existingHistory =
+    JSON.parse(
+      localStorage.getItem(
+        "productivityHistory"
+      )
+    ) || {};
+
+  existingHistory[today] =
+    completionRate;
+
+  localStorage.setItem(
+    "productivityHistory",
+    JSON.stringify(existingHistory)
+  );
+
+  // update state instantly
+
+  setProductivityHistory(
+    existingHistory
+  );
+
+}, [completionRate]);
+
+
+
+  // ---------------- GREETING ----------------
+
+  const hour = new Date().getHours();
+
+  let greeting = "";
+
+  if (hour < 12) {
+
+    greeting = "Good morning 👋";
+
+  }
+
+  else if (hour < 18) {
+
+    greeting = "Good afternoon 👋";
+
+  }
+
+  else {
+
+    greeting = "Good evening 👋";
+
+  }
+
   // ---------------- PRODUCTIVITY MESSAGE ----------------
 
   let productivityMessage = "";
@@ -82,37 +146,100 @@ function Analytics({ tasks }) {
 
   }
 
+  // ---------------- PRODUCTIVITY HISTORY ----------------
+
+  
+
+  const weekDays = [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+  ];
+
+  const today = new Date();
+
+  const weeklyData = weekDays.map(
+    (day, index) => {
+
+      const currentDate = new Date();
+
+      currentDate.setDate(
+        today.getDate() -
+        today.getDay() +
+        index
+      );
+
+      const formattedDate =
+        currentDate.toLocaleDateString();
+
+      return {
+
+        day,
+
+        productivity:
+          productivityHistory[
+            formattedDate
+          ] || 0,
+
+      };
+
+    }
+  );
+
+  // ---------------- STREAK ----------------
+
+  const historyValues =
+    Object.values(productivityHistory);
+
+const streakDays =
+  historyValues.filter(
+    (value) => value > 0
+  ).length;
+
+  // ---------------- DATE ----------------
+
+  const currentDate =
+    new Date().toDateString();
+
   return (
 
-    <div>
+    <div className="space-y-8">
 
       {/* HEADER */}
 
-      <div className="mb-8">
+      <div className="bg-[#fffaf5] p-8 rounded-3xl shadow">
 
-        <h1 className="text-4xl font-bold mb-2">
+        <h1 className="text-4xl font-bold text-[#3e3028] mb-2">
           Productivity Dashboard
         </h1>
 
+        <h2 className="text-2xl text-[#6d5244] mb-2">
+          {greeting}
+        </h2>
+
         <p className="text-gray-500">
-          Track your productivity trends and habits
+          {currentDate}
         </p>
 
       </div>
 
       {/* TOP CARDS */}
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
 
         {/* TOTAL TASKS */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-2xl shadow">
 
           <p className="text-gray-500">
             Total Tasks
           </p>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
             {normalTasks.length}
           </h2>
 
@@ -120,13 +247,13 @@ function Analytics({ tasks }) {
 
         {/* TASKS COMPLETED */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-2xl shadow">
 
           <p className="text-gray-500">
             Tasks Completed
           </p>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
             {completedTasks}
           </h2>
 
@@ -134,42 +261,42 @@ function Analytics({ tasks }) {
 
         {/* HABITS COMPLETED */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-2xl shadow">
 
           <p className="text-gray-500">
             Habits Completed
           </p>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
             {completedHabits}
+          </h2>
+
+        </div>
+
+        {/* STREAK */}
+
+        <div className="bg-[#fffaf5] p-6 rounded-2xl shadow">
+
+          <p className="text-gray-500">
+            Current Streak
+          </p>
+
+          <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
+            🔥 {streakDays}
           </h2>
 
         </div>
 
         {/* PRODUCTIVITY */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-2xl shadow">
 
           <p className="text-gray-500">
             Productivity
           </p>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
             {completionRate}%
-          </h2>
-
-        </div>
-
-        {/* DAILY HABITS */}
-
-        <div className="bg-white p-6 rounded-2xl shadow">
-
-          <p className="text-gray-500">
-            Daily Habits
-          </p>
-
-          <h2 className="text-4xl font-bold mt-2">
-            {completedHabits}/{habits.length}
           </h2>
 
         </div>
@@ -178,11 +305,11 @@ function Analytics({ tasks }) {
 
       {/* PRODUCTIVITY SECTION */}
 
-      <div className="bg-white p-8 rounded-2xl shadow mb-8">
+      <div className="bg-[#fffaf5] p-8 rounded-3xl shadow">
 
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-6">
 
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold text-[#3e3028]">
             Daily Productivity
           </h2>
 
@@ -211,7 +338,7 @@ function Analytics({ tasks }) {
           <div className="w-full bg-gray-200 rounded-full h-5">
 
             <div
-              className="bg-black h-5 rounded-full transition-all duration-500"
+              className="bg-[#3e3028] h-5 rounded-full transition-all duration-500"
               style={{
                 width: `${taskCompletionRate}%`
               }}
@@ -258,23 +385,23 @@ function Analytics({ tasks }) {
 
         {/* PRODUCTIVITY INSIGHTS */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-3xl shadow">
 
-          <h2 className="text-2xl font-bold mb-6">
+          <h2 className="text-2xl font-bold mb-6 text-[#3e3028]">
             Productivity Insights
           </h2>
 
           <div className="space-y-5">
 
-            {/* FOCUS LEVEL */}
+            {/* FOCUS */}
 
-            <div className="bg-gray-100 p-4 rounded-xl">
+            <div className="bg-[#f5ece3] p-4 rounded-xl">
 
               <p className="text-lg font-semibold">
                 📈 Focus Level
               </p>
 
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-600 mt-1">
 
                 {
                   completionRate >= 80
@@ -288,15 +415,15 @@ function Analytics({ tasks }) {
 
             </div>
 
-            {/* PRODUCTIVITY GOAL */}
+            {/* GOAL */}
 
-            <div className="bg-gray-100 p-4 rounded-xl">
+            <div className="bg-[#f5ece3] p-4 rounded-xl">
 
               <p className="text-lg font-semibold">
                 🎯 Productivity Goal
               </p>
 
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-600 mt-1">
 
                 {
                   completionRate >= 100
@@ -308,100 +435,62 @@ function Analytics({ tasks }) {
 
             </div>
 
+            {/* SUMMARY */}
+
+            <div className="bg-[#f5ece3] p-4 rounded-xl">
+
+              <p className="text-lg font-semibold">
+                ✅ Today's Summary
+              </p>
+
+              <p className="text-gray-600 mt-1">
+
+                You completed {completedTasks} tasks and {completedHabits} habits today.
+
+              </p>
+
+            </div>
+
           </div>
 
         </div>
 
-        {/* WEEKLY ACTIVITY */}
+        {/* WEEKLY PRODUCTIVITY */}
 
-        <div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-[#fffaf5] p-6 rounded-3xl shadow">
 
-          <h2 className="text-2xl font-bold mb-6">
+          <h2 className="text-2xl font-bold mb-6 text-[#3e3028]">
             Weekly Productivity
           </h2>
 
           <div className="space-y-5">
 
-            {/* MONDAY */}
+            {weeklyData.map((item, index) => (
 
-            <div>
+              <div key={index}>
 
-              <div className="flex justify-between mb-2">
+                <div className="flex justify-between mb-2">
 
-                <p>Mon</p>
-                <p>40%</p>
+                  <p>{item.day}</p>
 
-              </div>
+                  <p>{item.productivity}%</p>
 
-              <div className="w-full bg-gray-200 rounded-full h-4">
+                </div>
 
-                <div className="bg-black h-4 rounded-full w-[40%]" />
+                <div className="w-full bg-gray-200 rounded-full h-4">
 
-              </div>
+                  <div
+                    className="bg-[#3e3028] h-4 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${item.productivity}%`
+                    }}
+                  />
 
-            </div>
-
-            {/* TUESDAY */}
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p>Tue</p>
-                <p>60%</p>
+                </div>
 
               </div>
 
-              <div className="w-full bg-gray-200 rounded-full h-4">
-
-                <div className="bg-black h-4 rounded-full w-[60%]" />
-
-              </div>
-
-            </div>
-
-            {/* WEDNESDAY */}
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p>Wed</p>
-                <p>75%</p>
-
-              </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-4">
-
-                <div className="bg-black h-4 rounded-full w-[75%]" />
-
-              </div>
-
-            </div>
-
-            {/* TODAY */}
-
-            <div>
-
-              <div className="flex justify-between mb-2">
-
-                <p>Today</p>
-                <p>{completionRate}%</p>
-
-              </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-4">
-
-                <div
-                  className="bg-green-500 h-4 rounded-full transition-all duration-500"
-                  style={{
-                    width: `${completionRate}%`
-                  }}
-                />
-
-              </div>
-
-            </div>
+            ))}
 
           </div>
 

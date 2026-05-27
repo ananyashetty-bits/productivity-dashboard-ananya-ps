@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Notes from "./pages/Notes";
 import Tasks from "./pages/Tasks";
 import Habits from "./pages/Habits";
+import Pomodoro from "./pages/Pomodoro";
 
 import {
   getTasks,
@@ -61,8 +62,9 @@ function App() {
 
   // ---------------- TASK FUNCTIONS ----------------
 
- async function handleAddTask(
-  type = "task"
+async function handleAddTask(
+  type = "task",
+  priority = "Medium"
 ) {
 
   if (!taskTitle) return;
@@ -71,6 +73,8 @@ function App() {
     title: taskTitle,
     done: false,
     type: type,
+    priority: priority,
+    date: new Date().toLocaleDateString(),
   });
 
   setTaskTitle("");
@@ -125,52 +129,56 @@ function App() {
 
     
     //<BrowserRouter>
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-[#f5efe6] flex text-[#3e3028]">
 
       {/* SIDEBAR */}
 
-      <div className="w-64 bg-gradient-to-b from-black to-gray-900 text-white p-3 shadow-2xl">
+<div className="w-60 bg-[#efe7dc] min-h-screen p-6 border-r border-[#ddd2c3]">
 
-        
-        <h1 className="text-4xl font-extrabold mb-10 tracking-wide">
-          {/*Productivity Tracker*/}
-        </h1>
+  <h1 className="text-2xl font-bold text-[#3e3028] mb-10">
+    FocusFlow
+  </h1>
 
-        <div className="space-y-4">
+  <div className="flex flex-col gap-3">
 
-          <Link
-            to="/"
-            className="bg-gray-800 p-3 rounded-lg block"
-          >
-            Dashboard
-          </Link>
+    <Link
+      to="/"
+      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+    >
+      Dashboard
+    </Link>
 
-          <Link
-            to="/tasks"
-            className="hover:bg-gray-800 p-3 rounded-lg block"
-          >
-            Tasks
-          </Link>
+    <Link
+      to="/tasks"
+      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+    >
+      Tasks
+    </Link>
 
-           <Link
-    to="/habits"
-    className="block hover:bg-gray-800 p-3 rounded-lg"
-  >
-    Daily Habits
-  </Link>
+    <Link
+      to="/habits"
+      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+    >
+      Daily Habits
+    </Link>
 
-          <Link
-            to="/notes"
-            className="hover:bg-gray-800 p-3 rounded-lg block"
-          >
-            Notes
-          </Link>
+    <Link
+      to="/notes"
+      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+    >
+      Notes
+    </Link>
 
-         
+    <Link
+      to="/pomodoro"
+      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+    >
+      Pomodoro
+    </Link>
 
-        </div>
+  </div>
 
-      </div>
+</div>
 
       {/* MAIN CONTENT */}
 
@@ -236,7 +244,10 @@ function App() {
                 />
               }
             />
-
+              <Route
+  path="/pomodoro"
+  element={<Pomodoro />}
+/>
             
 
           </Routes>

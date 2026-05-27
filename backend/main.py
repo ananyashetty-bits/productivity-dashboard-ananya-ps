@@ -40,6 +40,8 @@ class Task(BaseModel):
     title: str
     done: bool = False
     type: str = "task"
+    priority: str = "Medium"
+    date: str
 class TaskResponse(Task):
     id: int
 
@@ -70,7 +72,7 @@ def get_tasks():
 
     return tasks
 
-@app.post("/tasks", response_model=TaskResponse)
+@app.post("/tasks")
 def create_task(task: Task):
 
     db = SessionLocal()
@@ -79,6 +81,8 @@ def create_task(task: Task):
         title=task.title,
         done=task.done,
         type=task.type,
+        priority=task.priority,
+        date=task.date
     )
 
     db.add(new_task)
@@ -86,6 +90,8 @@ def create_task(task: Task):
     db.commit()
 
     db.refresh(new_task)
+
+    db.close()
 
     return new_task
 
