@@ -39,7 +39,7 @@ notes = []
 class Task(BaseModel):
     title: str
     done: bool = False
-    type: str
+    type: str = "task"
 class TaskResponse(Task):
     id: int
 

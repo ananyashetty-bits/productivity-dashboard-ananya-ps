@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  BrowserRouter,
   Routes,
   Route,
   Link,
@@ -9,6 +10,7 @@ import {
 import Dashboard from "./pages/Dashboard";
 import Notes from "./pages/Notes";
 import Tasks from "./pages/Tasks";
+import Habits from "./pages/Habits";
 
 import {
   getTasks,
@@ -59,20 +61,22 @@ function App() {
 
   // ---------------- TASK FUNCTIONS ----------------
 
-  async function handleAddTask() {
+ async function handleAddTask(
+  type = "task"
+) {
 
-    if (!taskTitle) return;
+  if (!taskTitle) return;
 
-    await createTask({
-      title: taskTitle,
-      done: false,
-      type: "task",
-    });
+  await createTask({
+    title: taskTitle,
+    done: false,
+    type: type,
+  });
 
-    setTaskTitle("");
+  setTaskTitle("");
 
-    loadData();
-  }
+  loadData();
+}
 
   async function handleDeleteTask(index) {
 
@@ -115,29 +119,21 @@ function App() {
 
   // ---------------- ANALYTICS ----------------
 
-  const completedTasks = tasks.filter(
-    (task) => task.done
-  ).length;
-
-  const completionRate =
-    tasks.length > 0
-      ? Math.round(
-          (completedTasks / tasks.length) * 100
-        )
-      : 0;
-
   // ---------------- UI ----------------
 
   return (
 
+    
+    //<BrowserRouter>
     <div className="min-h-screen bg-gray-100 flex">
 
       {/* SIDEBAR */}
 
       <div className="w-64 bg-gradient-to-b from-black to-gray-900 text-white p-3 shadow-2xl">
 
+        
         <h1 className="text-4xl font-extrabold mb-10 tracking-wide">
-          Productivity Tracker
+          {/*Productivity Tracker*/}
         </h1>
 
         <div className="space-y-4">
@@ -156,7 +152,12 @@ function App() {
             Tasks
           </Link>
 
-          
+           <Link
+    to="/habits"
+    className="block hover:bg-gray-800 p-3 rounded-lg"
+  >
+    Daily Habits
+  </Link>
 
           <Link
             to="/notes"
@@ -188,8 +189,8 @@ function App() {
               element={
                 <Dashboard
                   tasks={tasks}
-                  completedTasks={completedTasks}
-                  completionRate={completionRate}
+                  
+                 
                 />
               }
             />
@@ -208,7 +209,19 @@ function App() {
   }
 />
 
-            
+             <Route
+      path="/habits"
+      element={
+        <Habits
+          tasks={tasks}
+          handleAddTask={handleAddTask}
+          handleDeleteTask={handleDeleteTask}
+          toggleTask={toggleTask}
+          taskTitle={taskTitle}
+          setTaskTitle={setTaskTitle}
+        />
+      }
+    />
   
 
             <Route
@@ -234,6 +247,7 @@ function App() {
 
     </div>
 
+//</BrowserRouter>
   );
 }
 
