@@ -1,13 +1,26 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import sessionmaker
+from database import engine
+from models import Base, TaskModel, NoteModel
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+    "http://localhost:5173",
+    "http://localhost:5174",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -17,7 +30,6 @@ app.add_middleware(
 # DATABASE (temporary memory)
 # -------------------------
 
-tasks = []
 notes = []
 
 # -------------------------
@@ -27,6 +39,12 @@ notes = []
 class Task(BaseModel):
     title: str
     done: bool = False
+    type: str
+class TaskResponse(Task):
+    id: int
+
+    class Config:
+        from_attributes = True
 
 class Note(BaseModel):
     content: str
@@ -43,30 +61,81 @@ def home():
 # TASK ROUTES
 # -------------------------
 
-@app.get("/tasks")
+@app.get("/tasks", response_model=list[TaskResponse])
 def get_tasks():
+
+    db = SessionLocal()
+
+    tasks = db.query(TaskModel).all()
+
     return tasks
 
-@app.post("/tasks")
+@app.post("/tasks", response_model=TaskResponse)
 def create_task(task: Task):
-    tasks.append(task.model_dump())
-    return {"message": "Task created"}
+
+    db = SessionLocal()
+
+    new_task = TaskModel(
+        title=task.title,
+        done=task.done,
+        type=task.type,
+    )
+
+    db.add(new_task)
+
+    db.commit()
+
+    db.refresh(new_task)
+
+    return new_task
 
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: int):
-    if task_id < len(tasks):
-        tasks.pop(task_id)
-        return {"message": "Task deleted"}
 
-    return {"error": "Task not found"}
+    db = SessionLocal()
+
+    task = db.query(TaskModel).filter(
+        TaskModel.id == task_id
+    ).first()
+
+    if task:
+
+        db.delete(task)
+
+        db.commit()
+
+        return {
+            "message": "Task deleted"
+        }
+
+    return {
+        "error": "Task not found"
+    }
 
 @app.put("/tasks/{task_id}")
 def update_task(task_id: int, updated_task: Task):
-    if task_id < len(tasks):
-        tasks[task_id] = updated_task.model_dump()
-        return {"message": "Task updated"}
 
-    return {"error": "Task not found"}
+    db = SessionLocal()
+
+    task = db.query(TaskModel).filter(
+        TaskModel.id == task_id
+    ).first()
+
+    if task:
+
+        task.title = updated_task.title
+        task.done = updated_task.done
+        task.type = updated_task.type
+
+        db.commit()
+
+        return {
+            "message": "Task updated"
+        }
+
+    return {
+        "error": "Task not found"
+    }
 
 # -------------------------
 # NOTES ROUTES

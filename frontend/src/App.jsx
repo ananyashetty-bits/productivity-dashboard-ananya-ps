@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 
 import {
+  Routes,
+  Route,
+  Link,
+} from "react-router-dom";
+
+import Dashboard from "./pages/Dashboard";
+import Notes from "./pages/Notes";
+import Tasks from "./pages/Tasks";
+
+import {
   getTasks,
   createTask,
   deleteTask,
@@ -56,6 +66,7 @@ function App() {
     await createTask({
       title: taskTitle,
       done: false,
+      type: "task",
     });
 
     setTaskTitle("");
@@ -64,7 +75,9 @@ function App() {
   }
 
   async function handleDeleteTask(index) {
+
     await deleteTask(index);
+
     loadData();
   }
 
@@ -94,209 +107,133 @@ function App() {
   }
 
   async function handleDeleteNote(index) {
+
     await deleteNote(index);
+
     loadData();
   }
 
-  // ---------------- EFFICIENCY TRACKER ----------------
+  // ---------------- ANALYTICS ----------------
 
   const completedTasks = tasks.filter(
     (task) => task.done
   ).length;
 
-  const pendingTasks = tasks.length - completedTasks;
-
   const completionRate =
     tasks.length > 0
-      ? Math.round((completedTasks / tasks.length) * 100)
+      ? Math.round(
+          (completedTasks / tasks.length) * 100
+        )
       : 0;
 
   // ---------------- UI ----------------
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
 
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-100 flex">
 
-        <h1 className="text-4xl font-bold mb-8">
-          Productivity Dashboard
+      {/* SIDEBAR */}
+
+      <div className="w-64 bg-gradient-to-b from-black to-gray-900 text-white p-3 shadow-2xl">
+
+        <h1 className="text-4xl font-extrabold mb-10 tracking-wide">
+          Productivity Tracker
         </h1>
 
-        {/* EFFICIENCY TRACKER */}
+        <div className="space-y-4">
 
-        <div className="grid grid-cols-3 gap-4 mb-8">
+          <Link
+            to="/"
+            className="bg-gray-800 p-3 rounded-lg block"
+          >
+            Dashboard
+          </Link>
 
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h2 className="text-gray-500">
-              Total Tasks
-            </h2>
+          <Link
+            to="/tasks"
+            className="hover:bg-gray-800 p-3 rounded-lg block"
+          >
+            Tasks
+          </Link>
 
-            <p className="text-3xl font-bold">
-              {tasks.length}
-            </p>
-          </div>
+          
 
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h2 className="text-gray-500">
-              Completed
-            </h2>
+          <Link
+            to="/notes"
+            className="hover:bg-gray-800 p-3 rounded-lg block"
+          >
+            Notes
+          </Link>
 
-            <p className="text-3xl font-bold">
-              {completedTasks}
-            </p>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h2 className="text-gray-500">
-              Completion %
-            </h2>
-
-            <p className="text-3xl font-bold">
-              {completionRate}%
-            </p>
-          </div>
-
-        </div>
-
-        {/* TASK SECTION */}
-
-        <div className="bg-white p-6 rounded-xl shadow mb-8">
-
-          <h2 className="text-2xl font-bold mb-4">
-            Task Manager
-          </h2>
-
-          <div className="flex gap-2 mb-4">
-
-            <input
-              className="border p-2 rounded flex-1"
-              value={taskTitle}
-              onChange={(e) =>
-                setTaskTitle(e.target.value)
-              }
-              placeholder="Enter task"
-            />
-
-            <button
-              onClick={handleAddTask}
-              className="bg-black text-white px-4 rounded"
-            >
-              Add
-            </button>
-
-          </div>
-
-          {loading && (
-            <p>Loading...</p>
-          )}
-
-          <div className="space-y-3">
-
-            {tasks.map((task, index) => (
-
-              <div
-                key={index}
-                className="bg-gray-100 p-4 rounded flex justify-between items-center"
-              >
-
-                <div className="flex gap-3 items-center">
-
-                  <input
-                    type="checkbox"
-                    checked={task.done}
-                    onChange={() =>
-                      toggleTask(index, task)
-                    }
-                  />
-
-                  <span
-                    className={
-                      task.done
-                        ? "line-through"
-                        : ""
-                    }
-                  >
-                    {task.title}
-                  </span>
-
-                </div>
-
-                <button
-                  onClick={() =>
-                    handleDeleteTask(index)
-                  }
-                  className="text-red-500"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
-        {/* NOTES SECTION */}
-
-        <div className="bg-white p-6 rounded-xl shadow">
-
-          <h2 className="text-2xl font-bold mb-4">
-            Notes Manager
-          </h2>
-
-          <div className="flex gap-2 mb-4">
-
-            <input
-              className="border p-2 rounded flex-1"
-              value={noteContent}
-              onChange={(e) =>
-                setNoteContent(e.target.value)
-              }
-              placeholder="Write note"
-            />
-
-            <button
-              onClick={handleAddNote}
-              className="bg-black text-white px-4 rounded"
-            >
-              Add
-            </button>
-
-          </div>
-
-          <div className="space-y-3">
-
-            {notes.map((note, index) => (
-
-              <div
-                key={index}
-                className="bg-gray-100 p-4 rounded flex justify-between"
-              >
-
-                <span>{note.content}</span>
-
-                <button
-                  onClick={() =>
-                    handleDeleteNote(index)
-                  }
-                  className="text-red-500"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            ))}
-
-          </div>
+         
 
         </div>
 
       </div>
 
+      {/* MAIN CONTENT */}
+
+      <div className="flex-1 p-8">
+
+        {loading ? (
+
+          <p>Loading...</p>
+
+        ) : (
+
+          <Routes>
+
+            <Route
+              path="/"
+              element={
+                <Dashboard
+                  tasks={tasks}
+                  completedTasks={completedTasks}
+                  completionRate={completionRate}
+                />
+              }
+            />
+
+            <Route
+  path="/tasks"
+  element={
+    <Tasks
+      tasks={tasks}
+      taskTitle={taskTitle}
+      setTaskTitle={setTaskTitle}
+      handleAddTask={handleAddTask}
+      handleDeleteTask={handleDeleteTask}
+      toggleTask={toggleTask}
+    />
+  }
+/>
+
+            
+  
+
+            <Route
+              path="/notes"
+              element={
+                <Notes
+                  notes={notes}
+                  noteContent={noteContent}
+                  setNoteContent={setNoteContent}
+                  handleAddNote={handleAddNote}
+                  handleDeleteNote={handleDeleteNote}
+                />
+              }
+            />
+
+            
+
+          </Routes>
+
+        )}
+
+      </div>
+
     </div>
+
   );
 }
 
