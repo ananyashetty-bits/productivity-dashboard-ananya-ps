@@ -14,6 +14,7 @@ class TaskModel(Base):
     type = Column(String)
     date = Column(String)
     priority = Column(String, default="Medium")
+    
 
 
 class NoteModel(Base):

@@ -211,21 +211,27 @@ const streakDays =
 
       {/* HEADER */}
 
-      <div className="bg-[#fffaf5] p-8 rounded-3xl shadow">
+      <div className="bg-[#fffaf5] rounded-3xl shadow p-7 mb-8 text-center">
 
-        <h1 className="text-4xl font-bold text-[#3e3028] mb-2">
-          Productivity Dashboard
-        </h1>
+  <h1 className="text-5xl font-extrabold tracking-wide text-[#3e3028] mb-4">
 
-        <h2 className="text-2xl text-[#6d5244] mb-2">
-          {greeting}
-        </h2>
+     FocusFlow
 
-        <p className="text-gray-500">
-          {currentDate}
-        </p>
+  </h1>
 
-      </div>
+  <h2 className="text-2xl text-[#6b5448] mb-2">
+
+    {" "+greeting}
+
+  </h2>
+
+  <p className="text-gray-500 text-lg">
+
+    {new Date().toDateString()}
+
+  </p>
+
+</div>
 
       {/* TOP CARDS */}
 

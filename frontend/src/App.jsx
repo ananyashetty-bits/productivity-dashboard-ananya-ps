@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import {
-  BrowserRouter,
   Routes,
   Route,
   Link,
@@ -30,74 +29,169 @@ function App() {
   // ---------------- TASK STATES ----------------
 
   const [tasks, setTasks] = useState([]);
-  const [taskTitle, setTaskTitle] = useState("");
+
+  const [taskTitle, setTaskTitle] =
+    useState("");
+
+  const [priority, setPriority] =
+    useState("Medium");
 
   // ---------------- NOTE STATES ----------------
 
   const [notes, setNotes] = useState([]);
-  const [noteContent, setNoteContent] = useState("");
+
+  const [noteContent, setNoteContent] =
+    useState("");
 
   // ---------------- LOADING ----------------
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
+  const [error, setError] = useState("");
 
   // ---------------- LOAD DATA ----------------
 
   async function loadData() {
 
+  try {
+
     setLoading(true);
 
+    setError("");
+
     const taskData = await getTasks();
+
     const noteData = await getNotes();
 
     setTasks(taskData);
+
     setNotes(noteData);
 
-    setLoading(false);
   }
 
+  catch (error) {
+
+    console.log(error);
+
+    setError(
+      "Failed to load data."
+    );
+
+  }
+
+  finally {
+
+    setLoading(false);
+
+  }
+
+}
+
   useEffect(() => {
+
     loadData();
+
   }, []);
 
   // ---------------- TASK FUNCTIONS ----------------
 
-async function handleAddTask(
+ async function handleAddTask(
   type = "task",
   priority = "Medium"
 ) {
 
   if (!taskTitle) return;
 
-  await createTask({
-    title: taskTitle,
-    done: false,
-    type: type,
-    priority: priority,
-    date: new Date().toLocaleDateString(),
-  });
+  try {
 
-  setTaskTitle("");
+    setError("");
 
-  loadData();
-}
+    await createTask({
 
-  async function handleDeleteTask(index) {
+      title: taskTitle,
 
-    await deleteTask(index);
+      done: false,
+
+      type: type,
+
+      priority: priority,
+
+      date:
+        new Date().toLocaleDateString(),
+
+    });
+
+    setTaskTitle("");
 
     loadData();
+
   }
 
-  async function toggleTask(index, task) {
+  catch (error) {
 
-    await updateTask(index, {
+    console.log(error);
+
+    setError(
+      "Failed to add task."
+    );
+
+  }
+
+}
+
+  async function handleDeleteTask(id) {
+
+  try {
+
+    setError("");
+
+    await deleteTask(id);
+
+    loadData();
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    setError(
+      "Failed to delete task."
+    );
+
+  }
+
+}
+
+ async function toggleTask(id, task) {
+
+  try {
+
+    setError("");
+
+    await updateTask(id, {
+
       ...task,
+
       done: !task.done,
+
     });
 
     loadData();
+
   }
+
+  catch (error) {
+
+    console.log(error);
+
+    setError(
+      "Failed to update task."
+    );
+
+  }
+
+}
 
   // ---------------- NOTE FUNCTIONS ----------------
 
@@ -112,143 +206,171 @@ async function handleAddTask(
     setNoteContent("");
 
     loadData();
+
   }
 
-  async function handleDeleteNote(index) {
+  async function handleDeleteNote(id) {
 
-    await deleteNote(index);
+    await deleteNote(id);
 
     loadData();
-  }
 
-  // ---------------- ANALYTICS ----------------
+  }
 
   // ---------------- UI ----------------
 
   return (
 
-    
-    //<BrowserRouter>
     <div className="min-h-screen bg-[#f5efe6] flex text-[#3e3028]">
 
       {/* SIDEBAR */}
 
-<div className="w-60 bg-[#efe7dc] min-h-screen p-6 border-r border-[#ddd2c3]">
+      <div className="w-60 bg-[#efe7dc] min-h-screen p-6 border-r border-[#ddd2c3]">
 
-  <h1 className="text-2xl font-bold text-[#3e3028] mb-10">
-    FocusFlow
-  </h1>
+        <h1 className="text-3xl font-bold mb-10">
+          Productivity Dashboard
+        </h1>
 
-  <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
 
-    <Link
-      to="/"
-      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
-    >
-      Dashboard
-    </Link>
+          <Link
+            to="/"
+            className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+          >
+            Dashboard
+          </Link>
 
-    <Link
-      to="/tasks"
-      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
-    >
-      Tasks
-    </Link>
+          <Link
+            to="/tasks"
+            className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+          >
+            Tasks
+          </Link>
 
-    <Link
-      to="/habits"
-      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
-    >
-      Daily Habits
-    </Link>
+          <Link
+            to="/habits"
+            className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+          >
+            Daily Habits
+          </Link>
 
-    <Link
-      to="/notes"
-      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
-    >
-      Notes
-    </Link>
+          <Link
+            to="/notes"
+            className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+          >
+            Notes
+          </Link>
 
-    <Link
-      to="/pomodoro"
-      className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
-    >
-      Pomodoro
-    </Link>
+          <Link
+            to="/pomodoro"
+            className="px-4 py-3 rounded-xl hover:bg-[#e2d6c7] transition-all"
+          >
+            Pomodoro
+          </Link>
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
       {/* MAIN CONTENT */}
 
       <div className="flex-1 p-8">
 
+        {error && (
+
+  <div className="bg-red-100 text-red-600 p-4 rounded-xl mb-6">
+
+    {error}
+
+  </div>
+
+)}
+
         {loading ? (
 
-          <p>Loading...</p>
+          <p className="text-xl">
+            Loading...
+          </p>
 
         ) : (
 
           <Routes>
+
+            {/* DASHBOARD */}
 
             <Route
               path="/"
               element={
                 <Dashboard
                   tasks={tasks}
-                  
-                 
                 />
               }
             />
 
-            <Route
-  path="/tasks"
-  element={
-    <Tasks
-      tasks={tasks}
-      taskTitle={taskTitle}
-      setTaskTitle={setTaskTitle}
-      handleAddTask={handleAddTask}
-      handleDeleteTask={handleDeleteTask}
-      toggleTask={toggleTask}
-    />
-  }
-/>
+            {/* TASKS */}
 
-             <Route
-      path="/habits"
-      element={
-        <Habits
-          tasks={tasks}
-          handleAddTask={handleAddTask}
-          handleDeleteTask={handleDeleteTask}
-          toggleTask={toggleTask}
-          taskTitle={taskTitle}
-          setTaskTitle={setTaskTitle}
-        />
-      }
-    />
-  
+            <Route
+              path="/tasks"
+              element={
+                <Tasks
+                  tasks={tasks}
+
+                  taskTitle={taskTitle}
+                  setTaskTitle={setTaskTitle}
+
+                  priority={priority}
+                  setPriority={setPriority}
+
+                  handleAddTask={handleAddTask}
+                  handleDeleteTask={handleDeleteTask}
+                  toggleTask={toggleTask}
+                />
+              }
+            />
+
+            {/* HABITS */}
+
+            <Route
+              path="/habits"
+              element={
+                <Habits
+                  tasks={tasks}
+
+                  taskTitle={taskTitle}
+                  setTaskTitle={setTaskTitle}
+
+                  handleAddTask={handleAddTask}
+                  handleDeleteTask={handleDeleteTask}
+                  toggleTask={toggleTask}
+                />
+              }
+            />
+
+            {/* NOTES */}
 
             <Route
               path="/notes"
               element={
                 <Notes
                   notes={notes}
+
                   noteContent={noteContent}
                   setNoteContent={setNoteContent}
+
                   handleAddNote={handleAddNote}
                   handleDeleteNote={handleDeleteNote}
                 />
               }
             />
-              <Route
-  path="/pomodoro"
-  element={<Pomodoro />}
-/>
-            
+
+            {/* POMODORO */}
+
+            <Route
+              path="/pomodoro"
+              element={
+                <Pomodoro />
+              }
+            />
 
           </Routes>
 
@@ -258,8 +380,8 @@ async function handleAddTask(
 
     </div>
 
-//</BrowserRouter>
   );
+
 }
 
 export default App;
