@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000"="https://productivity-dashboard-ananya-ps.onrender.com";
+const API_URL ="https://productivity-dashboard-ananya-ps.onrender.com";
 
 // ---------------- TASKS ----------------
 
