@@ -1,6 +1,4 @@
-function Analytics({
-  tasks,
-}) {
+function Analytics({ tasks }) {
 
   // ---------------- FILTER TASKS ----------------
 
@@ -8,13 +6,25 @@ function Analytics({
     (task) => task.type === "task"
   );
 
-  const completedTasks = normalTasks.filter(
-  (task) => task.done
-).length;
-
   const habits = tasks.filter(
     (task) => task.type === "habit"
   );
+
+  // ---------------- TASK ANALYTICS ----------------
+
+  const completedTasks = normalTasks.filter(
+    (task) => task.done
+  ).length;
+
+  const taskCompletionRate =
+    normalTasks.length > 0
+      ? Math.round(
+          (
+            completedTasks /
+            normalTasks.length
+          ) * 100
+        )
+      : 0;
 
   // ---------------- HABIT ANALYTICS ----------------
 
@@ -22,23 +32,28 @@ function Analytics({
     (habit) => habit.done
   ).length;
 
-  const completedItems =
-  completedTasks + completedHabits;
-
-const completionRate =
-  tasks.length > 0
-    ? Math.round(
-        (
-          completedItems /
-          tasks.length
-        ) * 100
-      )
-    : 0;
-
   const habitCompletionRate =
     habits.length > 0
       ? Math.round(
-          (completedHabits / habits.length) * 100
+          (
+            completedHabits /
+            habits.length
+          ) * 100
+        )
+      : 0;
+
+  // ---------------- OVERALL PRODUCTIVITY ----------------
+
+  const completedItems =
+    completedTasks + completedHabits;
+
+  const completionRate =
+    tasks.length > 0
+      ? Math.round(
+          (
+            completedItems /
+            tasks.length
+          ) * 100
         )
       : 0;
 
@@ -47,18 +62,24 @@ const completionRate =
   let productivityMessage = "";
 
   if (completionRate >= 80) {
+
     productivityMessage =
-      "Excellent productivity today! ";
+      "Excellent productivity today!";
+
   }
 
   else if (completionRate >= 50) {
+
     productivityMessage =
       "Good progress today!";
+
   }
 
   else {
+
     productivityMessage =
       "Let's complete more tasks today 📈";
+
   }
 
   return (
@@ -99,35 +120,31 @@ const completionRate =
 
         {/* TASKS COMPLETED */}
 
-<div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-white p-6 rounded-2xl shadow">
 
-  <p className="text-gray-500">
-    Tasks Completed
-  </p>
+          <p className="text-gray-500">
+            Tasks Completed
+          </p>
 
-  <h2 className="text-4xl font-bold mt-2">
-    {
-      normalTasks.filter(
-        (task) => task.done
-      ).length
-    }
-  </h2>
+          <h2 className="text-4xl font-bold mt-2">
+            {completedTasks}
+          </h2>
 
-</div>
+        </div>
 
-{/* HABITS COMPLETED */}
+        {/* HABITS COMPLETED */}
 
-<div className="bg-white p-6 rounded-2xl shadow">
+        <div className="bg-white p-6 rounded-2xl shadow">
 
-  <p className="text-gray-500">
-    Habits Completed
-  </p>
+          <p className="text-gray-500">
+            Habits Completed
+          </p>
 
-  <h2 className="text-4xl font-bold mt-2">
-    {completedHabits}
-  </h2>
+          <h2 className="text-4xl font-bold mt-2">
+            {completedHabits}
+          </h2>
 
-</div>
+        </div>
 
         {/* PRODUCTIVITY */}
 
@@ -143,7 +160,7 @@ const completionRate =
 
         </div>
 
-        {/* HABITS */}
+        {/* DAILY HABITS */}
 
         <div className="bg-white p-6 rounded-2xl shadow">
 
@@ -186,7 +203,7 @@ const completionRate =
             </p>
 
             <p className="font-semibold">
-              {completionRate}%
+              {taskCompletionRate}%
             </p>
 
           </div>
@@ -196,7 +213,7 @@ const completionRate =
             <div
               className="bg-black h-5 rounded-full transition-all duration-500"
               style={{
-                width: `${completionRate}%`
+                width: `${taskCompletionRate}%`
               }}
             />
 
@@ -235,40 +252,58 @@ const completionRate =
 
       </div>
 
-      {/* QUICK INSIGHTS */}
+      {/* BOTTOM GRID */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* TASK STATUS */}
+        {/* PRODUCTIVITY INSIGHTS */}
 
         <div className="bg-white p-6 rounded-2xl shadow">
 
-          <h2 className="text-2xl font-bold mb-4">
-            Task Summary
+          <h2 className="text-2xl font-bold mb-6">
+            Productivity Insights
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
 
-            <div className="flex justify-between">
+            {/* FOCUS LEVEL */}
 
-              <p className="text-gray-500">
-                Pending Tasks
+            <div className="bg-gray-100 p-4 rounded-xl">
+
+              <p className="text-lg font-semibold">
+                📈 Focus Level
               </p>
 
-              <p className="font-bold">
-                {normalTasks.length - completedTasks}
+              <p className="text-gray-500 mt-1">
+
+                {
+                  completionRate >= 80
+                    ? "High focus and consistency today."
+                    : completionRate >= 50
+                    ? "Decent progress with room for improvement."
+                    : "Try completing a few more tasks today."
+                }
+
               </p>
 
             </div>
 
-            <div className="flex justify-between">
+            {/* PRODUCTIVITY GOAL */}
 
-              <p className="text-gray-500">
-                Completed Tasks
+            <div className="bg-gray-100 p-4 rounded-xl">
+
+              <p className="text-lg font-semibold">
+                🎯 Productivity Goal
               </p>
 
-              <p className="font-bold">
-                {completedTasks}
+              <p className="text-gray-500 mt-1">
+
+                {
+                  completionRate >= 100
+                    ? "All productivity goals completed!"
+                    : `${100 - completionRate}% remaining to reach full productivity.`
+                }
+
               </p>
 
             </div>
@@ -277,37 +312,94 @@ const completionRate =
 
         </div>
 
-        {/* HABIT STATUS */}
+        {/* WEEKLY ACTIVITY */}
 
         <div className="bg-white p-6 rounded-2xl shadow">
 
-          <h2 className="text-2xl font-bold mb-4">
-            Habit Summary
+          <h2 className="text-2xl font-bold mb-6">
+            Weekly Productivity
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
 
-            <div className="flex justify-between">
+            {/* MONDAY */}
 
-              <p className="text-gray-500">
-                Habits Completed
-              </p>
+            <div>
 
-              <p className="font-bold">
-                {completedHabits}
-              </p>
+              <div className="flex justify-between mb-2">
+
+                <p>Mon</p>
+                <p>40%</p>
+
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-4">
+
+                <div className="bg-black h-4 rounded-full w-[40%]" />
+
+              </div>
 
             </div>
 
-            <div className="flex justify-between">
+            {/* TUESDAY */}
 
-              <p className="text-gray-500">
-                Habits Remaining
-              </p>
+            <div>
 
-              <p className="font-bold">
-                {habits.length - completedHabits}
-              </p>
+              <div className="flex justify-between mb-2">
+
+                <p>Tue</p>
+                <p>60%</p>
+
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-4">
+
+                <div className="bg-black h-4 rounded-full w-[60%]" />
+
+              </div>
+
+            </div>
+
+            {/* WEDNESDAY */}
+
+            <div>
+
+              <div className="flex justify-between mb-2">
+
+                <p>Wed</p>
+                <p>75%</p>
+
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-4">
+
+                <div className="bg-black h-4 rounded-full w-[75%]" />
+
+              </div>
+
+            </div>
+
+            {/* TODAY */}
+
+            <div>
+
+              <div className="flex justify-between mb-2">
+
+                <p>Today</p>
+                <p>{completionRate}%</p>
+
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-4">
+
+                <div
+                  className="bg-green-500 h-4 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${completionRate}%`
+                  }}
+                />
+
+              </div>
 
             </div>
 
@@ -320,6 +412,7 @@ const completionRate =
     </div>
 
   );
+
 }
 
 export default Analytics;
