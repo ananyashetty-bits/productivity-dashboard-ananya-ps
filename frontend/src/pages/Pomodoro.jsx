@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 
 function Pomodoro() {
 
+  // ---------------- TIMER STATES ----------------
+
   const [minutes, setMinutes] =
     useState(25);
 
   const [seconds, setSeconds] =
     useState(0);
+
+  const [inputMinutes, setInputMinutes] =
+    useState(25);
 
   const [isRunning, setIsRunning] =
     useState(false);
@@ -59,11 +64,23 @@ function Pomodoro() {
 
   }, [isRunning, minutes, seconds]);
 
+  // ---------------- START TIMER ----------------
+
+  function startCustomTimer() {
+
+    setMinutes(inputMinutes);
+
+    setSeconds(0);
+
+    setIsRunning(false);
+
+  }
+
   // ---------------- RESET ----------------
 
   function resetTimer() {
 
-    setMinutes(25);
+    setMinutes(inputMinutes);
 
     setSeconds(0);
 
@@ -98,6 +115,47 @@ function Pomodoro() {
           Stay focused and productive
 
         </p>
+
+        {/* CUSTOM INPUT */}
+
+        <div className="mb-8">
+
+          <label className="block mb-3 text-lg font-semibold text-[#3e3028]">
+
+            Focus Minutes
+
+          </label>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+
+            <input
+              type="number"
+
+              min="1"
+
+              value={inputMinutes}
+
+              onChange={(e) =>
+                setInputMinutes(
+                  Number(e.target.value)
+                )
+              }
+
+              className="w-40 px-4 py-3 rounded-2xl border text-center text-black"
+            />
+
+            <button
+              onClick={startCustomTimer}
+              className="bg-[#3e3028] text-white px-5 py-3 rounded-2xl hover:opacity-90 transition-all"
+            >
+
+              Set Timer
+
+            </button>
+
+          </div>
+
+        </div>
 
         {/* TIMER */}
 
