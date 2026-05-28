@@ -221,3 +221,18 @@ __marimo__/
 node_modules/
 dist/
 .env
+
+*.db
+
+
+# Frontend build files
+frontend/dist/
+
+# Backend virtual environment
+backend/venv/
+
+# Vercel + Render
+.vercel/
+
+# macOS
+.DS_Store
