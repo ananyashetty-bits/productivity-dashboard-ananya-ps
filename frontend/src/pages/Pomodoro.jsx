@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 
 function Pomodoro() {
 
-  const [minutes, setMinutes] = useState(25);
+  const [minutes, setMinutes] =
+    useState(25);
 
-  const [timeLeft, setTimeLeft] =
-    useState(25 * 60);
+  const [seconds, setSeconds] =
+    useState(0);
 
   const [isRunning, setIsRunning] =
     useState(false);
@@ -14,131 +15,126 @@ function Pomodoro() {
 
   useEffect(() => {
 
-    let interval = null;
+    let timer;
 
     if (isRunning) {
 
-      interval = setInterval(() => {
+      timer = setInterval(() => {
 
-        setTimeLeft((prev) => {
+        if (seconds > 0) {
 
-          if (prev <= 1) {
+          setSeconds(seconds - 1);
 
-            clearInterval(interval);
+        }
+
+        else {
+
+          if (minutes === 0) {
+
+            clearInterval(timer);
 
             setIsRunning(false);
 
-            alert("Pomodoro session complete!");
+            alert(
+              "Pomodoro session complete!"
+            );
 
-            return 0;
           }
 
-          return prev - 1;
+          else {
 
-        });
+            setMinutes(minutes - 1);
+
+            setSeconds(59);
+
+          }
+
+        }
 
       }, 1000);
 
     }
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
 
-  }, [isRunning]);
-
-  // ---------------- FORMAT ----------------
-
-  const minutesDisplay =
-    Math.floor(timeLeft / 60);
-
-  const secondsDisplay =
-    timeLeft % 60;
-
-  // ---------------- START ----------------
-
-  function startTimer() {
-
-    setTimeLeft(minutes * 60);
-
-    setIsRunning(true);
-  }
-
-  // ---------------- PAUSE ----------------
-
-  function pauseTimer() {
-
-    setIsRunning(false);
-  }
+  }, [isRunning, minutes, seconds]);
 
   // ---------------- RESET ----------------
 
   function resetTimer() {
 
+    setMinutes(25);
+
+    setSeconds(0);
+
     setIsRunning(false);
 
-    setTimeLeft(minutes * 60);
   }
+
+  // ---------------- FORMAT ----------------
+
+  const formattedTime = `${String(
+    minutes
+  ).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
 
   return (
 
-    <div className="bg-[#fffaf5] p-10 rounded-3xl shadow-xl min-h-[80vh] flex flex-col justify-center">
+    <div className="min-h-[80vh] flex items-center justify-center px-4">
 
-      <h1 className="text-5xl font-bold mb-12 text-center">
-        Pomodoro Timer 
-      </h1>
+      <div className="bg-[#fffaf5] w-full max-w-md rounded-3xl shadow-xl p-6 md:p-10 text-center">
 
-      {/* MAIN SECTION */}
+        {/* TITLE */}
 
-      <div className="flex items-center justify-center gap-20">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#3e3028] mb-3">
+
+          Pomodoro Timer
+
+        </h1>
+
+        <p className="text-gray-500 mb-8">
+
+          Stay focused and productive
+
+        </p>
 
         {/* TIMER */}
 
-        <div className="text-[120px] font-bold tracking-wide">
+        <div className="bg-[#f5ece3] rounded-3xl py-10 px-4 mb-8">
 
-          {String(minutesDisplay).padStart(2, "0")}:
-          {String(secondsDisplay).padStart(2, "0")}
+          <h2 className="text-5xl md:text-7xl font-bold text-[#3e3028] break-all">
+
+            {formattedTime}
+
+          </h2>
 
         </div>
 
-        {/* CONTROLS */}
+        {/* BUTTONS */}
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
 
-          {/* MINUTES INPUT */}
-
-          <input
-            type="number"
-            value={minutes}
-            onChange={(e) =>
-              setMinutes(e.target.value)
+          <button
+            onClick={() =>
+              setIsRunning(!isRunning)
             }
-            className="border border-[#d6c8b8] bg-[#f5efe6] p-4 rounded-2xl w-40 text-xl"
-          />
-
-          {/* START */}
-
-          <button
-            onClick={startTimer}
-            className="bg-[#3e3028] text-white px-6 py-4 rounded-2xl hover:bg-[#2c221c] transition-all duration-300"
+            className="bg-[#3e3028] text-white px-6 py-3 rounded-2xl hover:opacity-90 transition-all"
           >
-            Start
+
+            {isRunning
+              ? "Pause"
+              : "Start"}
+
           </button>
-
-          {/* PAUSE */}
-
-          <button
-            onClick={pauseTimer}
-            className="bg-[#c8b6a6] text-[#3e3028] px-6 py-4 rounded-2xl hover:bg-[#b9a38f] transition-all duration-300"
-          >
-            Pause
-          </button>
-
-          {/* RESET */}
 
           <button
             onClick={resetTimer}
-            className="bg-[#e6dccf] text-[#3e3028] px-6 py-4 rounded-2xl hover:bg-[#d6c8b8] transition-all duration-300"
+            className="bg-gray-300 text-[#3e3028] px-6 py-3 rounded-2xl hover:bg-gray-400 transition-all"
           >
+
             Reset
+
           </button>
 
         </div>
@@ -148,6 +144,7 @@ function Pomodoro() {
     </div>
 
   );
+
 }
 
 export default Pomodoro;
