@@ -11,8 +11,14 @@ function Habits({
 
   // ---------------- FILTER HABITS ----------------
 
-  const habits = tasks.filter(
+  const habits = tasks
+  .filter(
     (task) => task.type === "habit"
+  )
+  .sort(
+    (a, b) =>
+      new Date(b.date) -
+      new Date(a.date)
   );
 
   // ---------------- UI ----------------

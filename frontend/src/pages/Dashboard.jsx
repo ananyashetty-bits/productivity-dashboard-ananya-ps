@@ -274,7 +274,7 @@ const streakDays =
           </p>
 
           <h2 className="text-4xl font-bold mt-2 text-[#3e3028]">
-            {completedHabits}
+            {completedHabits}/{habits.length}
           </h2>
 
         </div>
