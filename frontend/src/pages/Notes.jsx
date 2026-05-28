@@ -60,7 +60,7 @@ function Notes({
 
               <button
                 onClick={() =>
-                  handleDeleteNote(index)
+                  handleDeleteNote(note.id)
                 }
                 className="text-red-500"
               >
