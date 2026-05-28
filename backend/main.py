@@ -272,7 +272,7 @@ def delete_note(note_id: int):
             }
 
         return {
-            "error": "Note not found"
+            "error": "Note not found."
         }
 
     finally:
