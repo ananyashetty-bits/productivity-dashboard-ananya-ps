@@ -46,42 +46,39 @@ function App() {
   // ---------------- LOADING ----------------
 
   const [loading, setLoading] =
-    useState(false);
+    useState(true);
   const [error, setError] = useState("");
 
   // ---------------- LOAD DATA ----------------
-
-  async function loadData() {
+async function loadData(showLoader = false) {
 
   try {
 
-    setLoading(true);
-
-    setError("");
+    if (showLoader) {
+      setLoading(true);
+    }
 
     const taskData = await getTasks();
-
     const noteData = await getNotes();
 
     setTasks(taskData);
-
     setNotes(noteData);
 
   }
 
   catch (error) {
 
-    console.log(error);
+    console.error(error);
 
-    setError(
-      "Failed to load data."
-    );
+    setError("Failed to load data.");
 
   }
 
   finally {
 
-    setLoading(false);
+    if (showLoader) {
+      setLoading(false);
+    }
 
   }
 
@@ -89,7 +86,7 @@ function App() {
 
   useEffect(() => {
 
-    loadData();
+    loadData(true);
 
   }, []);
 
@@ -123,7 +120,7 @@ function App() {
 
     setTaskTitle("");
 
-    loadData();
+    loadData(false);
 
   }
 
@@ -147,7 +144,7 @@ function App() {
 
     await deleteTask(id);
 
-    loadData();
+    loadData(false);
 
   }
 
@@ -177,7 +174,7 @@ function App() {
 
     });
 
-    loadData();
+    loadData(false);
 
   }
 
@@ -205,7 +202,7 @@ function App() {
 
     setNoteContent("");
 
-    loadData();
+    loadData(false);
 
   }
 
@@ -213,7 +210,7 @@ function App() {
 
     await deleteNote(id);
 
-    loadData();
+    loadData(false);
 
   }
 
@@ -221,17 +218,17 @@ function App() {
 
   return (
 
-    <div className="min-h-screen bg-[#f5efe6] flex text-[#3e3028]">
+    <div className="min-h-screen bg-[#f5efe6] flex flex-col md:flex-row text-[#3e3028]">
 
       {/* SIDEBAR */}
 
-      <div className="w-60 bg-[#efe7dc] min-h-screen p-6 border-r border-[#ddd2c3]">
+      <div className="w-full md:w-60 bg-[#efe7dc] p-4 md:p-6 border-b md:border-b-0 md:border-r border-[#ddd2c3]">
 
         <h1 className="text-3xl font-bold mb-10">
           Productivity Dashboard
         </h1>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex md:flex-col gap-3 overflow-x-auto">
 
           <Link
             to="/"
@@ -274,7 +271,7 @@ function App() {
 
       {/* MAIN CONTENT */}
 
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 md:p-8">
 
         {error && (
 
